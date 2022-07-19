@@ -2,8 +2,6 @@ import PIL.Image
 from termcolor import colored
 import config
 
-N_CHAR_BEFORE_LINE_BREAK = 100
-
 
 def open_image(path):
     return PIL.Image.open(path)
@@ -24,8 +22,16 @@ def grey_scale(image):
     return image.convert('L')
 
 
-def convert_pixel_to_char(ascii: list, pixels: list):
-    return ' '.join([ascii[pixel // (N_CHAR_BEFORE_LINE_BREAK//2)] for pixel in pixels])
+def convert_pixel_to_char(ascii: list, pixels: list, sparse: bool = True):
+    if sparse:
+        return ' '.join([ascii[(pixel // ((256) // len(ascii))) - 1] for pixel in pixels])
+
+    return ''.join([ascii[(pixel // ((256) // len(ascii))) - 1] for pixel in pixels])
+
+
+def add_line_break(characters: str, characters_per_line: int = 100):
+    return "\n".join(
+        characters[i:(i + characters_per_line)] for i in range(0, len(characters), characters_per_line))
 
 
 try:
@@ -35,15 +41,15 @@ except FileNotFoundError as e:
     print('Arquivo não encontrado. Utilizando uma imagem de exemplo')
     image = open_image('linkedin-logo.png')
 
+if config.GENERAL['HORIZONTAL_SPACE']:
+    image = grey_scale(resize_image(image, config.GENERAL['WIDTH'] // 2))
+else:
+    image = grey_scale(resize_image(image, config.GENERAL['WIDTH']))
 
-image_rotated = resize_image(image, N_CHAR_BEFORE_LINE_BREAK//2)
-image_rotated_grey = grey_scale(image_rotated)
-pixels = image_rotated_grey.getdata()
-
-characters = convert_pixel_to_char(config.GENERAL['ASCII_CHARACTERS'], pixels)
-
-image_ascii = "\n".join(characters[i:(i + 100)] for i in range(0, len(characters), 100))
-print(colored(image_ascii, 'blue'))
+pixels = image.getdata()
+characters = convert_pixel_to_char(config.GENERAL['ASCII_CHARACTERS'], pixels, config.GENERAL['HORIZONTAL_SPACE'])
+ascii_image = add_line_break(characters, config.GENERAL['WIDTH'])
+print(colored(ascii_image, 'blue'))
 
 with open('ascii_image.txt', 'w') as f:
-    f.write(image_ascii)
+    f.write(ascii_image)

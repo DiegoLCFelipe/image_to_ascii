@@ -1,4 +1,6 @@
 GENERAL = {
     'path': 'python_logo.png',
-    'ASCII_CHARACTERS': ['.', '1', "1", "1", "#", "&", ".", "$", "$", "@", "#"]
+    'ASCII_CHARACTERS': ['#', '@', '@', '*', '.', '.'],
+    'WIDTH': 100,
+    'HORIZONTAL_SPACE': True
 }
