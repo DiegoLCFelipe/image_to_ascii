@@ -1,16 +1,47 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+import PIL.Image
+from termcolor import colored
+import config
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+def open_image(path):
+    return PIL.Image.open(path)
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+
+def rotate_image(image, angle: float = 270, expand: bool = True):
+    return image.rotate(angle, expand=expand)
+
+
+def resize_image(image, new_width: float = 100):
+    width, height = image.size
+    aspect = height / width
+    new_height = int(new_width * aspect)
+    return image.resize((new_width, new_height))
+
+
+def grey_scale(image):
+    return image.convert('L')
+
+
+try:
+    path = config.GENERAL['path']
+    image = open_image(path)
+except FileNotFoundError as e:
+    print('Arquivo não encontrado. Utilizando uma imagem de exemplo')
+    image = open_image('linkedin-logo.png')
+
+# try:
+#
+#
+#     ASCII_CHARACTERS = ['.', '1', "1", "1", "#", "&", ".", "$", "$", "@", "#"]
+
+
+image_rotated = resize_image(image, 50)
+image_rotated_grey = grey_scale(image_rotated)
+pixels = image_rotated_grey.getdata()
+
+characters = ' '.join([config.GENERAL['ASCII_CHARACTERS'][pixel // 30] for pixel in pixels])
+image_ascii = "\n".join(characters[i:(i + 100)] for i in range(0, len(characters), 100))
+print(colored(image_ascii, 'blue'))
+
+with open('ascii_image.txt', 'w') as f:
+    f.write(image_ascii)
