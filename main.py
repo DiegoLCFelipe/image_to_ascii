@@ -2,6 +2,8 @@ import PIL.Image
 from termcolor import colored
 import config
 
+N_CHAR_BEFORE_LINE_BREAK = 100
+
 
 def open_image(path):
     return PIL.Image.open(path)
@@ -22,6 +24,10 @@ def grey_scale(image):
     return image.convert('L')
 
 
+def convert_pixel_to_char(ascii: list, pixels: list):
+    return ' '.join([ascii[pixel // (N_CHAR_BEFORE_LINE_BREAK//2)] for pixel in pixels])
+
+
 try:
     path = config.GENERAL['path']
     image = open_image(path)
@@ -29,17 +35,13 @@ except FileNotFoundError as e:
     print('Arquivo não encontrado. Utilizando uma imagem de exemplo')
     image = open_image('linkedin-logo.png')
 
-# try:
-#
-#
-#     ASCII_CHARACTERS = ['.', '1', "1", "1", "#", "&", ".", "$", "$", "@", "#"]
 
-
-image_rotated = resize_image(image, 50)
+image_rotated = resize_image(image, N_CHAR_BEFORE_LINE_BREAK//2)
 image_rotated_grey = grey_scale(image_rotated)
 pixels = image_rotated_grey.getdata()
 
-characters = ' '.join([config.GENERAL['ASCII_CHARACTERS'][pixel // 30] for pixel in pixels])
+characters = convert_pixel_to_char(config.GENERAL['ASCII_CHARACTERS'], pixels)
+
 image_ascii = "\n".join(characters[i:(i + 100)] for i in range(0, len(characters), 100))
 print(colored(image_ascii, 'blue'))
 
