@@ -1,8 +1,8 @@
-from imageHandler import ImageHandler
-from pixelsToASCII import PixelsToASCII
-import config
+from app.imageHandler import ImageHandler
+from app.pixelsToASCII import PixelsToASCII
+from docs import config
 
-path = config.GENERAL['path']
+path = 'docs/'+ config.GENERAL['filename']
 image = ImageHandler(path)
 image.gray_scale()
 image.contrast_scale()

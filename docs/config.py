@@ -1,5 +1,5 @@
 GENERAL = {
-    'path': 'github_logo.png',
+    'filename': 'github_logo.png',
     #'ASCII_CHARACTERS': ['#', '@', '&', '%', '*', '+', ':', '.'],
     'ASCII_CHARACTERS': ['#', '.'],
     'WIDTH': 100,
